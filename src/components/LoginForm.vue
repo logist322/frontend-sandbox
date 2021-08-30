@@ -41,6 +41,7 @@ export default {
   font-family Roboto, Arial, sans-serif
   font-size 22px
   line-height 1
+  color #777777
 
 .login__button
   background-color #757de8
