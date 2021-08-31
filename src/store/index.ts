@@ -3,6 +3,7 @@ import init, {
   ConnectionHandle,
   DeviceVideoTrackConstraints,
   Jason,
+  JasonError,
   LocalMediaTrack,
   MediaKind,
   MediaStreamSettings,
@@ -30,6 +31,7 @@ const store: StoreOptions<RootState> = {
   state: {
     localStream: new MediaStream(),
     remoteStream: new MediaStream(),
+    isInited: false,
 
     userId: "",
     roomId: "",
@@ -52,7 +54,11 @@ const store: StoreOptions<RootState> = {
     },
 
     async initConnection({ commit, state }) {
-      await init();
+      if (!state.isInited) {
+        await init();
+
+        state.isInited = true;
+      }
 
       commit("jasonInit");
       commit("roomInit");
@@ -75,33 +81,39 @@ const store: StoreOptions<RootState> = {
 
       const settings = new MediaStreamSettings();
 
-      try {
-        settings.device_video(new DeviceVideoTrackConstraints());
-      } catch (e) {
-        return false;
-      }
-
-      try {
-        settings.audio(new AudioTrackConstraints());
-      } catch (e) {
-        return false;
-      }
+      settings.device_video(new DeviceVideoTrackConstraints());
+      settings.audio(new AudioTrackConstraints());
 
       const localTracks = await state.jason
         ?.media_manager()
-        .init_local_tracks(settings);
+        .init_local_tracks(settings)
+        .catch((e: JasonError) => {
+          console.log(e.name());
+        });
 
-      localTracks.forEach((track: LocalMediaTrack) => {
-        track.kind() === MediaKind.Video
-          ? state.localStream.addTrack(track.get_track())
-          : false;
-      });
+      if (localTracks) {
+        localTracks.forEach((track: LocalMediaTrack) => {
+          track.kind() === MediaKind.Video
+            ? state.localStream.addTrack(track.get_track())
+            : false;
+        });
+      }
 
       await state.room?.set_local_media_settings(settings, false, false);
 
       state.room?.join(
         createURL(SIGNAL_URL, state.roomId, state.userId, TOKEN)
       );
+    },
+
+    killJason({ commit, state }) {
+      if (state.room) {
+        state.jason?.close_room(state.room);
+      }
+
+      state.jason?.dispose();
+
+      commit("resetState");
     },
   },
 
@@ -120,6 +132,18 @@ const store: StoreOptions<RootState> = {
 
     roomInit(state) {
       state.room = state.jason?.init_room();
+    },
+
+    resetState(state) {
+      state.localStream.getTracks().forEach((track) => {
+        state.localStream.removeTrack(track);
+      });
+      state.remoteStream.getTracks().forEach((track) => {
+        state.localStream.removeTrack(track);
+      });
+
+      state.userId = "";
+      state.roomId = "";
     },
   },
 };

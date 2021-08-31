@@ -30,11 +30,19 @@ export default Vue.extend({
     this.drawVideos();
   },
 
+  beforeDestroy() {
+    this.killJason();
+  },
+
   computed: {
     ...mapGetters(["localStream", "remoteStream"]),
   },
 
   methods: {
+    killJason() {
+      this.$store.dispatch("killJason");
+    },
+
     drawVideos() {
       const localVideoElements = this.$el.querySelectorAll("video");
 
@@ -73,13 +81,6 @@ export default Vue.extend({
 
 <style lang="stylus">
 @import url(../styles/style.css)
-
-// Temporary
-// video
-//   background url(../assets/img/stub.png)
-//   background-size cover
-//   background-repeat no-repeat
-//   background-position center
 
 @keyframes hideUp {
   0% {
