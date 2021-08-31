@@ -14,14 +14,42 @@
 </template>
 
 <script lang="ts">
+import Vue from "vue";
+import { mapGetters } from "vuex";
 import MediaControls from "./MediaControls.vue";
 
-export default {
-  components: { MediaControls },
+export default Vue.extend({
   name: "RoomInterface",
+  components: { MediaControls },
 
-  mounted(): void {
-    document.addEventListener("mousemove", (): void => {
+  async mounted() {
+    document.addEventListener("mousemove", this.addMouseMovehandler);
+
+    await this.$store.dispatch("initConnection");
+
+    this.drawVideos();
+  },
+
+  computed: {
+    ...mapGetters(["localStream", "remoteStream"]),
+  },
+
+  methods: {
+    drawVideos() {
+      const localVideoElements = this.$el.querySelectorAll("video");
+
+      localVideoElements.forEach((element) => {
+        if (element.classList.contains("room__local-video")) {
+          element.srcObject = this.localStream;
+        }
+
+        if (element.classList.contains("room__remote-video")) {
+          element.srcObject = this.remoteStream;
+        }
+      });
+    },
+
+    addMouseMovehandler() {
       const roomNameElement = document.querySelector(".room__name");
       const roomControlsElement = document.querySelector(".room__controls");
 
@@ -38,20 +66,20 @@ export default {
           roomControlsElement.classList.add("hide-down");
         }, 1000);
       }
-    });
+    },
   },
-};
+});
 </script>
 
 <style lang="stylus">
 @import url(../styles/style.css)
 
 // Temporary
-video
-  background url(../assets/img/stub.png)
-  background-size cover
-  background-repeat no-repeat
-  background-position center
+// video
+//   background url(../assets/img/stub.png)
+//   background-size cover
+//   background-repeat no-repeat
+//   background-position center
 
 @keyframes hideUp {
   0% {
@@ -124,8 +152,13 @@ video
   position fixed
   top 43px
   right 27px
-  width 320px
   height 230px
+
+  @media(max-width: 767px) {
+    top 16px
+    right 16px
+    height 150px
+  }
 
 .room__controls
   position fixed

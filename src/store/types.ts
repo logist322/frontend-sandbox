@@ -1,3 +1,11 @@
+import { Jason, RoomHandle } from "medea-jason";
+
 export interface RootState {
-  id: number;
+  jason?: Jason;
+  room?: RoomHandle;
+  localStream: MediaStream;
+  remoteStream: MediaStream;
+
+  userId: string;
+  roomId: string;
 }

@@ -1,9 +1,19 @@
 <template>
   <div class="login">
     <form class="login__form">
-      <input class="login__input" type="text" placeholder="Room ID" />
+      <input
+        class="login__input"
+        type="text"
+        placeholder="Room ID"
+        v-model="room"
+      />
 
-      <input class="login__input" type="text" placeholder="Username" />
+      <input
+        class="login__input"
+        type="text"
+        placeholder="Username"
+        v-model="user"
+      />
 
       <button class="login__button" type="submit" @click.prevent="enterRoom">
         Join
@@ -20,13 +30,19 @@ export default Vue.extend({
 
   data() {
     return {
-      id: 3,
+      user: "",
+      room: "",
     };
   },
 
   methods: {
-    enterRoom(): void {
-      this.$store.dispatch("changeId");
+    async enterRoom() {
+      await this.$store.dispatch("setConnectionOptions", {
+        user: this.user,
+        room: this.room,
+      });
+
+      this.$router.push("room");
     },
   },
 });
