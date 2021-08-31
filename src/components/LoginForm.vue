@@ -5,15 +5,31 @@
 
       <input class="login__input" type="text" placeholder="Username" />
 
-      <button class="login__button" type="submit">Join</button>
+      <button class="login__button" type="submit" @click.prevent="enterRoom">
+        Join
+      </button>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-export default {
+import Vue from "vue";
+
+export default Vue.extend({
   name: "LoginForm",
-};
+
+  data() {
+    return {
+      id: 3,
+    };
+  },
+
+  methods: {
+    enterRoom(): void {
+      this.$store.dispatch("changeId");
+    },
+  },
+});
 </script>
 
 <style lang="stylus">
