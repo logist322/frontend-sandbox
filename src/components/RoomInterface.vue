@@ -4,7 +4,6 @@
       <p>Ferris</p>
     </div>
 
-    <audio class="room__remote-audio" autoplay></audio>
     <video class="room__remote-video" autoplay></video>
 
     <video v-show="isVideoEnabled" class="room__local-video" autoplay></video>
@@ -14,8 +13,9 @@
 </template>
 
 <script lang="ts">
+import { ACTIONS, GETTERS } from "@/store";
 import Vue from "vue";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import MediaControls from "./MediaControls.vue";
 
 export default Vue.extend({
@@ -25,16 +25,22 @@ export default Vue.extend({
   async mounted() {
     document.addEventListener("mousemove", this.addMouseMovehandler);
 
-    await this.$store.dispatch("initConnection");
+    await this.initConnection();
 
     this.drawVideos();
   },
 
   computed: {
-    ...mapGetters(["localStream", "remoteStream", "isVideoEnabled"]),
+    ...mapGetters([
+      GETTERS.LOCAL_STREAM,
+      GETTERS.REMOTE_STREAM,
+      GETTERS.IS_VIDEO_ENABLED,
+    ]),
   },
 
   methods: {
+    ...mapActions([ACTIONS.INIT_CONNECTION]),
+
     drawVideos() {
       const localVideoElements = this.$el.querySelectorAll("video");
 

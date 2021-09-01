@@ -23,7 +23,9 @@
 </template>
 
 <script lang="ts">
+import { ACTIONS } from "@/store";
 import Vue from "vue";
+import { mapActions } from "vuex";
 
 export default Vue.extend({
   name: "LoginForm",
@@ -36,8 +38,10 @@ export default Vue.extend({
   },
 
   methods: {
+    ...mapActions([ACTIONS.SET_CONNECION_OPTIONS]),
+
     async enterRoom() {
-      await this.$store.dispatch("setConnectionOptions", {
+      await this.setConnectionOptions({
         user: this.user,
         room: this.room,
       });

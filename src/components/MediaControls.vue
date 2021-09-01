@@ -21,8 +21,9 @@
 </template>
 
 <script lang="ts">
+import { ACTIONS } from "@/store";
 import Vue from "vue";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default Vue.extend({
   name: "MediaControls",
@@ -36,20 +37,14 @@ export default Vue.extend({
   },
 
   methods: {
-    toggleAudio(): void {
-      this.$store.dispatch("toggleAudio");
-    },
-
-    toggleVideo(): void {
-      this.$store.dispatch("toggleVideo");
-    },
+    ...mapActions([
+      ACTIONS.TOGGLE_AUDIO,
+      ACTIONS.TOGGLE_VIDEO,
+      ACTIONS.KILL_JASON,
+    ]),
 
     decline(): void {
       this.$router.push("/");
-    },
-
-    killJason() {
-      this.$store.dispatch("killJason");
     },
   },
 
