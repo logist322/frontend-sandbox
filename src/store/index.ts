@@ -18,6 +18,7 @@ export enum GETTERS {
   REMOTE_STREAM = "remoteStream",
   IS_AUDIO_ENABLED = "isAudioEnabled",
   IS_VIDEO_ENABLED = "isVideoEnabled",
+  MEMBER_ID = "memberId",
 }
 
 export enum ACTIONS {
@@ -39,6 +40,7 @@ enum MUTATIONS {
   DISABLE_VIDEO = "disableVideo",
   ENABLE_VIDEO = "enableVideo",
   RESET_STATE = "resetState",
+  SET_MEMBER_ID = "setMemberId",
 }
 
 const store: StoreOptions<RootState> = {
@@ -47,12 +49,17 @@ const store: StoreOptions<RootState> = {
     remoteStream: new MediaStream(),
     isAudioEnabled: true,
     isVideoEnabled: true,
+    memberId: "",
 
     userId: "",
     roomId: "",
   },
 
   getters: {
+    [GETTERS.MEMBER_ID](state) {
+      return state.memberId;
+    },
+
     [GETTERS.LOCAL_STREAM](state) {
       return state.localStream;
     },
@@ -85,7 +92,7 @@ const store: StoreOptions<RootState> = {
       await dispatch(ACTIONS.CONFIGURE_ROOM);
     },
 
-    async [ACTIONS.CONFIGURE_ROOM]({ state }) {
+    async [ACTIONS.CONFIGURE_ROOM]({ commit, state }) {
       state.room?.on_failed_local_media(() => {
         console.log("Local media failed");
       });
@@ -96,6 +103,10 @@ const store: StoreOptions<RootState> = {
 
       state.room?.on_new_connection((connection: ConnectionHandle) => {
         console.log("Connected");
+
+        commit(MUTATIONS.SET_MEMBER_ID, {
+          gotMember: connection.get_remote_member_id(),
+        });
 
         connection.on_remote_track_added((track: RemoteMediaTrack) => {
           state.remoteStream.addTrack(track.get_track());
@@ -154,6 +165,10 @@ const store: StoreOptions<RootState> = {
 
     [MUTATIONS.SET_ROOM_ID](state, roomId) {
       state.roomId = roomId;
+    },
+
+    [MUTATIONS.SET_MEMBER_ID](state, { gotMember }) {
+      state.memberId = gotMember;
     },
 
     [MUTATIONS.JASON_INIT](state) {
