@@ -7,7 +7,7 @@
     <audio class="room__remote-audio" autoplay></audio>
     <video class="room__remote-video" autoplay></video>
 
-    <video class="room__local-video" autoplay></video>
+    <video v-show="isVideoEnabled" class="room__local-video" autoplay></video>
 
     <media-controls :className="'room__controls'" />
   </div>
@@ -30,19 +30,11 @@ export default Vue.extend({
     this.drawVideos();
   },
 
-  beforeDestroy() {
-    this.killJason();
-  },
-
   computed: {
-    ...mapGetters(["localStream", "remoteStream"]),
+    ...mapGetters(["localStream", "remoteStream", "isVideoEnabled"]),
   },
 
   methods: {
-    killJason() {
-      this.$store.dispatch("killJason");
-    },
-
     drawVideos() {
       const localVideoElements = this.$el.querySelectorAll("video");
 
@@ -154,6 +146,7 @@ export default Vue.extend({
   top 43px
   right 27px
   height 230px
+  transform scale(-1, 1)
 
   @media(max-width: 767px) {
     top 16px

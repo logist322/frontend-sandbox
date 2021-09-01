@@ -31,7 +31,8 @@ const store: StoreOptions<RootState> = {
   state: {
     localStream: new MediaStream(),
     remoteStream: new MediaStream(),
-    isInited: false,
+    isAudioEnabled: true,
+    isVideoEnabled: true,
 
     userId: "",
     roomId: "",
@@ -45,6 +46,14 @@ const store: StoreOptions<RootState> = {
     remoteStream(state) {
       return state.remoteStream;
     },
+
+    isAudioEnabled(state) {
+      return state.isAudioEnabled;
+    },
+
+    isVideoEnabled(state) {
+      return state.isVideoEnabled;
+    },
   },
 
   actions: {
@@ -54,11 +63,7 @@ const store: StoreOptions<RootState> = {
     },
 
     async initConnection({ commit, state }) {
-      if (!state.isInited) {
-        await init();
-
-        state.isInited = true;
-      }
+      await init();
 
       commit("jasonInit");
       commit("roomInit");
@@ -106,6 +111,14 @@ const store: StoreOptions<RootState> = {
       );
     },
 
+    toggleAudio({ commit, state }) {
+      state.isAudioEnabled ? commit("disableAudio") : commit("enableAudio");
+    },
+
+    toggleVideo({ commit, state }) {
+      state.isVideoEnabled ? commit("disableVideo") : commit("enableVideo");
+    },
+
     killJason({ commit, state }) {
       if (state.room) {
         state.jason?.close_room(state.room);
@@ -134,6 +147,22 @@ const store: StoreOptions<RootState> = {
       state.room = state.jason?.init_room();
     },
 
+    disableAudio(state) {
+      state.room?.disable_audio().then(() => (state.isAudioEnabled = false));
+    },
+
+    enableAudio(state) {
+      state.room?.enable_audio().then(() => (state.isAudioEnabled = true));
+    },
+
+    disableVideo(state) {
+      state.room?.disable_video().then(() => (state.isVideoEnabled = false));
+    },
+
+    enableVideo(state) {
+      state.room?.enable_video().then(() => (state.isVideoEnabled = true));
+    },
+
     resetState(state) {
       state.localStream.getTracks().forEach((track) => {
         state.localStream.removeTrack(track);
@@ -141,6 +170,8 @@ const store: StoreOptions<RootState> = {
       state.remoteStream.getTracks().forEach((track) => {
         state.localStream.removeTrack(track);
       });
+      state.isAudioEnabled = true;
+      state.isVideoEnabled = true;
 
       state.userId = "";
       state.roomId = "";
