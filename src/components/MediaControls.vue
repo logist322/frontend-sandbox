@@ -1,36 +1,59 @@
 <template>
   <ul class="media-controls" :class="className">
-    <li class="media-controls__item media-controls__item--video">
-      <button @click="toggleButton">Video switch</button>
+    <li
+      class="media-controls__item media-controls__item--video"
+      :class="{ 'media-controls__item--off': isVideoEnabled }"
+    >
+      <button @click="toggleVideo">Video switch</button>
     </li>
 
-    <li class="media-controls__item media-controls__item--audio">
-      <button @click="toggleButton">Audio switch</button>
+    <li
+      class="media-controls__item media-controls__item--audio"
+      :class="{ 'media-controls__item--off': isAudioEnabled }"
+    >
+      <button @click="toggleAudio">Audio switch</button>
     </li>
 
     <li class="media-controls__item media-controls__item--decline">
-      <button>Decline</button>
+      <button @click="decline">Decline</button>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-export default {
+import { ACTIONS } from "@/store";
+import Vue from "vue";
+import { mapActions, mapGetters } from "vuex";
+
+export default Vue.extend({
   name: "MediaControls",
+
+  beforeDestroy() {
+    this.killJason();
+  },
+
+  computed: {
+    ...mapGetters(["isAudioEnabled", "isVideoEnabled"]),
+  },
+
+  methods: {
+    ...mapActions([
+      ACTIONS.TOGGLE_AUDIO,
+      ACTIONS.TOGGLE_VIDEO,
+      ACTIONS.KILL_JASON,
+    ]),
+
+    decline(): void {
+      this.$router.push("/");
+    },
+  },
 
   props: {
     className: {
       type: String,
     },
   },
-
-  methods: {
-    // Temporary
-    toggleButton(evt: any): void {
-      evt.target.parentNode.classList.toggle("media-controls__item--off");
-    },
-  },
-};
+});
 </script>
 
 <style lang="stylus">

@@ -1,19 +1,55 @@
 <template>
   <div class="login">
     <form class="login__form">
-      <input class="login__input" type="text" placeholder="Room ID" />
+      <input
+        class="login__input"
+        type="text"
+        placeholder="Room ID"
+        v-model="room"
+      />
 
-      <input class="login__input" type="text" placeholder="Username" />
+      <input
+        class="login__input"
+        type="text"
+        placeholder="Username"
+        v-model="user"
+      />
 
-      <button class="login__button" type="submit">Join</button>
+      <button class="login__button" type="submit" @click.prevent="enterRoom">
+        Join
+      </button>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-export default {
+import { ACTIONS } from "@/store";
+import Vue from "vue";
+import { mapActions } from "vuex";
+
+export default Vue.extend({
   name: "LoginForm",
-};
+
+  data() {
+    return {
+      user: "",
+      room: "",
+    };
+  },
+
+  methods: {
+    ...mapActions([ACTIONS.SET_CONNECION_OPTIONS]),
+
+    async enterRoom() {
+      await this.setConnectionOptions({
+        user: this.user,
+        room: this.room,
+      });
+
+      this.$router.push("room");
+    },
+  },
+});
 </script>
 
 <style lang="stylus">
