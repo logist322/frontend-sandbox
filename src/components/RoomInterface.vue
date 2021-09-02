@@ -1,7 +1,7 @@
 <template>
   <div class="room">
     <div class="room__name">
-      <p>Ferris</p>
+      <p>{{ memberId }}</p>
     </div>
 
     <video class="room__remote-video" autoplay></video>
@@ -32,6 +32,7 @@ export default Vue.extend({
 
   computed: {
     ...mapGetters([
+      GETTERS.MEMBER_ID,
       GETTERS.LOCAL_STREAM,
       GETTERS.REMOTE_STREAM,
       GETTERS.IS_VIDEO_ENABLED,

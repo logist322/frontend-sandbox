@@ -7,6 +7,7 @@ export interface RootState {
   remoteStream: MediaStream;
   isAudioEnabled: boolean;
   isVideoEnabled: boolean;
+  memberId: string;
 
   userId: string;
   roomId: string;

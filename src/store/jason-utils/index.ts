@@ -4,7 +4,7 @@ import {
   MediaStreamSettings,
 } from "medea-jason";
 
-enum SERVER_OPTIONS {
+export enum SERVER_OPTIONS {
   SIGNAL_URL = "wss://frontend-sandbox-logist322.herokuapp.com/ws/",
   TOKEN = "helloworld",
 }

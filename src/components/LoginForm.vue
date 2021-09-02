@@ -6,6 +6,7 @@
         type="text"
         placeholder="Room ID"
         v-model="room"
+        name="room_id"
       />
 
       <input
@@ -13,6 +14,7 @@
         type="text"
         placeholder="Username"
         v-model="user"
+        name="user_id"
       />
 
       <button class="login__button" type="submit" @click.prevent="enterRoom">
