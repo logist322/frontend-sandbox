@@ -6,8 +6,10 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "karma start --single-run",
-    "test:e2e": "npm run build && cucumber-js -f @cucumber/pretty-formatter tests/e2e/",
-    "lint": "vue-cli-service lint"
+    "test:e2e": "cucumber-js -f @cucumber/pretty-formatter tests/e2e/",
+    "lint": "vue-cli-service lint",
+    "fmt": "prettier --write '{src,test}/**/*.ts'",
+    "fmt:check": "prettier --check '{src,test}/**/*.ts'"
   },
   "dependencies": {
     "core-js": "^3.8.3",
