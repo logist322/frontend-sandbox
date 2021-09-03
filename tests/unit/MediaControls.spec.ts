@@ -7,7 +7,7 @@ import MediaControls from "@/components/MediaControls.vue";
 
 chai.use(sinonChai);
 
-describe("RoomInterface.vue", () => {
+describe("MediaControls.vue", () => {
   const localVue = createLocalVue();
 
   localVue.use(Vuex);
